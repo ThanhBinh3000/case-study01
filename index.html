@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>dự an đầu tay</title>
+    <style>
+        #tien{
+            width: 100px;
+            height: 100px;
+            margin-left: 45%;
+        }
+        #tobi{
+            margin-left: 20%;
+        }
+    </style>
+</head>
+<script src="case-study02.js"></script>
+<script src="case-study.js"></script>
+<canvas id="myCanvas" width="1400" height="570" style="border: solid 1px"></canvas>
+<input type="button" onclick="start()" value="Start" id="tien">
+<p id="tobi"> <img src="img/tien.jpg" width="700" height="470"></p>
+<body>
+<script>
+    let id;
+    document.getElementById('myCanvas').style.display = 'none';
+    function start() {
+        document.getElementById('myCanvas').style.display='block';
+        id = setInterval(moverock, 25);
+        document.getElementById('tobi').style.display='none';
+        document.getElementById('tien').style.display='none';
+    }
+    let cavas = document.getElementById('myCanvas');
+    let ctx = cavas.getContext('2d');
+    let frog = new CaseStudy(150, 470, 150, 100, 100, 'img/coc.png');
+    let rock = new CaseStudy02(800, 470, 70, 100, 'img/da.png');
+    let log = new CaseStudy02(1400,400,100,150,'img/da02.png');
+    let backgroundimg = new CaseStudy02(0, 0, 2500, 650, 'img/game.png');
+    let nut = new CaseStudy(50, 50, 50, 50, 0, 'img/nut.png');
+    let gameover = new CaseStudy(330, 40, 600, 600, 0, 'img/lose.png');
+    let bee= new CaseStudy02(100, 100, 100, 70, 'img/bee.png');
+    let score = 0;
+    nut.drawFrog(ctx);
+    frog.drawFrog(ctx);
+    backgroundimg.drawRock(ctx);
+    rock.drawRock(ctx);
+    gameover.drawFrog(ctx);
+    log.drawRock(ctx);
+    bee.drawRock(ctx);
+    function moveFrog(event) {
+        switch (event.keyCode) {
+            case 32: {
+                frog.jump();
+                break;
+            }
+        }
+        obitoCanvas();
+        setTimeout(drop, 500); // chờ bao nhiêu lâu thì thực hiện công việc nào đó ( theo thời gian )
+    }
+    function drop(){
+        frog.drop()
+        obitoCanvas();
+    }
+    function clearCanvas() {
+        ctx.clearRect(0, 0, 1400, 570);
+    }
+    function moverock() {
+        rock.moveLeft();
+        log.moveLeft();
+        bee.moveright();
+        backgroundimg.movenen();
+        obitoCanvas();
+        let a = rock.collision(frog._y);
+        let b = log.collision(frog._y);
+        if (a === true || b=== true ) {
+            gameover.drawFrog(ctx);
+            clearInterval(id);// xóa bỏ setInterval
+        }
+        score = score + 1
+        ctx.fillStyle = "black";
+        ctx.font = " 20px Comic Sans MS";
+        ctx.fillText("Score : " + score, 20, cavas.clientHeight - 50);
+    }
+    function obitoCanvas() {
+        clearCanvas();
+        backgroundimg.drawRock(ctx);
+        bee.drawRock(ctx)
+        rock.drawRock(ctx);
+        frog.drawFrog(ctx);
+        nut.drawFrog(ctx);
+        log.drawRock(ctx);
+
+    }
+    function getMousePosition(canvas, event) {
+        let rect = canvas.getBoundingClientRect();
+        let x = event.clientX - rect.left;
+        let y = event.clientY - rect.top;
+        console.log   ("Coordinate x: " + x,
+            "Coordinate y: " + y);
+        if (x < 101 && x > 47 && y < 96 && y > 53) {
+            frog._x = 150;
+            frog._y = 470;
+            rock._x = 800;
+            rock._y = 470;
+            log._x = 1400;
+            log._y = 400;
+            obitoCanvas();
+            score=0;
+            id = setInterval(moverock, 25);
+        }
+    }
+    let canvasElem = document.querySelector("canvas");
+    canvasElem.addEventListener("mousedown", function (e) {
+        getMousePosition(canvasElem, e);
+    });
+    document.addEventListener('keydown', moveFrog);
+</script>
+</body>
+</html>
